@@ -27,7 +27,7 @@ const Top20=()=>{
     },[])
 
     return(
-        <div className='bg-black text-white mt-10'>
+        <div className='bg-black text-white mt-10 pt-8 pl-5'>
                 <div className='trending '>
                     <h1 className='text-base font-bold text-neutral-300 px-3 py-2'>Top 20 Songs of this week</h1>
                     <div className='flex flex-row overflow-scroll scroll-smooth transition-[scroll] duration-[0.3s] ease-[ease-in-out]' >
