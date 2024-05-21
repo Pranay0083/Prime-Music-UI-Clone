@@ -28,7 +28,7 @@ const Evergreen=()=>{
 
     return(
         <div  className='bg-black text-white pt-8 pl-5'>
-            <div className='trending '>
+            <div className='Evergreen '>
                 <h1 className='text-base font-bold text-neutral-300 px-3 py-2'>Evergreen Songs</h1>
                 <div className='flex flex-row overflow-scroll scroll-smooth transition-[scroll] duration-[0.3s] ease-[ease-in-out]' >
                     {evergreen.map((item) => {
