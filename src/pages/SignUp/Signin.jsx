@@ -15,6 +15,9 @@ const SignIn = () => {
     try {
       const response = await login(email, password);
       const { token, data } = response.data;
+      if (token) {
+        localStorage.setItem('token', token);
+      }
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user: data.user, token } });
       navigate('/');
     } catch (error) {
