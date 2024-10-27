@@ -17,9 +17,10 @@ const SignIn = () => {
       const { token, data } = response.data;
       if (token) {
         localStorage.setItem('token', token);
+        console.log('Token saved:', token);
+        dispatch({ type: 'LOGIN_SUCCESS', payload: { user: data.user, token } });
+        navigate('/');
       }
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: data.user, token } });
-      navigate('/');
     } catch (error) {
       dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
     }

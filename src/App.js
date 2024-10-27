@@ -1,7 +1,6 @@
 import React, { Suspense, lazy, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './contexts/authContext';
-import { DataProvider } from './contexts/dataContext';
 
 const LoggedInHome = lazy(() => import('./pages/Home/LoggedInHome'));
 const LoggedOutHome = lazy(() => import('./pages/Home/LoggedOutHome.jsx'));
@@ -57,13 +56,11 @@ function Layout() {
 function App() {
   return (
     <AuthProvider>
-      <DataProvider>
-        <Router>
-          <Suspense fallback={<div>Loading...</div>}>
-            <Layout />
-          </Suspense>
-        </Router>
-      </DataProvider>
+      <Router>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Layout />
+        </Suspense>
+      </Router>
     </AuthProvider>
   );
 }
