@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AuthProvider } from './contexts/authContext';
 
 const Home = lazy(() => import('./pages/Home/Home'));
 const Music = lazy(() => import('./pages/Music/Music'));
@@ -21,7 +22,6 @@ const Footer = lazy(() => import('./components/layout/Footer'));
 
 function Layout() {
   const location = useLocation();
-
   const showHeader = ['/', '/music', '/album', '/favourite', '/search', '/mood', '/profile', '/playlist'].includes(location.pathname);
   const showFooter = ['/signup', '/signin', '/subscription'].includes(location.pathname);
 
@@ -52,11 +52,13 @@ function Layout() {
 
 function App() {
   return (
-    <Router>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Layout />
-      </Suspense>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Layout />
+        </Suspense>
+      </Router>
+    </AuthProvider>
   );
 }
 

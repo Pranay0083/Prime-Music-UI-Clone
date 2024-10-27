@@ -1,8 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'
 import img from '../../../assets/images/Amazon_Music_Logo_Horizontal_RGB_White+Music_Cyan_MASTER.png';
 
 function Logo() {
-  return <img src={img} alt="Amazon Music Logo" className="h-7" />;
+  const navigate = useNavigate();
+  return <img
+      src={img}
+      alt="Amazon Music Logo"
+      className="h-7 cursor-pointer"
+      onClick={() => navigate('/')}
+    />
 }
 
 export default Logo;
