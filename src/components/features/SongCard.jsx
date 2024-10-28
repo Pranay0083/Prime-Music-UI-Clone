@@ -6,14 +6,14 @@ const SongCard = ({ song }) => {
 
   return (
     <div
-      className='flex-shrink-0 cursor-pointer transition-transform hover:scale-105'
+      className='flex-shrink-0 cursor-pointer transition-transform hover:scale-105 mr-4'
       onClick={() => navigate(`/song/${song._id}`)}
     >
-      <div className='w-[200px]'>
+      <div className='w-[175px]'>
         <img 
           src={song.thumbnail} 
           alt={`${song.title} thumbnail`} 
-          className='h-[200px] w-[200px] rounded-md object-cover mb-2'
+          className='h-[175px] w-[175px] rounded-md object-cover mb-2'
         />
         <div className="px-1">
           <h2 className='text-white font-medium text-sm mb-1 truncate'>

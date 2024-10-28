@@ -39,7 +39,7 @@ const LoggedOutHome = () => {
   if (error) return <ErrorState message={error} />;
 
   return (
-    <div className=" max-w-full mx-20 mt-28">
+    <div className="max-w-full mx-20 mt-28">
       {songs.map((categoryData) => (
         <CategorySection
           key={categoryData.category}
