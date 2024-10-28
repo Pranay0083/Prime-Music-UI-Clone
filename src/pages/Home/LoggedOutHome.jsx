@@ -18,7 +18,7 @@ const LoggedOutHome = () => {
         let allSongs = [];
         
         for (let category of categories) {
-          const response = await api.fetchSongsByCategory(token, category.key, category.value, 42);
+          const response = await api.fetchSongsByCategory(token, category.key, category.value, 15);
           allSongs.push({ category: category.name, songs: response.data });
         }
         
