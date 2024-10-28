@@ -151,4 +151,10 @@ export const api = {
         });
         return response;
     },
+    fetchSongsByCategory: async (token, key, value, limit) => {
+        const response = await axios.get(`${BASE_URL}/song?limit=${limit}&${key}=${encodeURIComponent(value)}`, {
+            headers: getHeaders(token)
+        });
+        return response.data;
+    },
 };
