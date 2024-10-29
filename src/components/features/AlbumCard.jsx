@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const SongCard = ({ song, onPlay }) => {
+const AlbumCard = ({ album }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div
       className='flex-shrink-0 cursor-pointer transition-transform mr-4 group'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={onPlay}
+      onClick={() => navigate(`/album/${album._id}`)}
     >
       <div className='w-[175px]'>
         <div className='relative flex'>
           <img
-            src={song.thumbnail}
-            alt={`${song.title} thumbnail`}
+            src={album.artists[0].image}
+            alt={album.artists[0].name}
             className='h-[175px] w-[175px] rounded-md object-cover mb-2 group-hover:brightness-50 transition-all duration-300'
           />
           <div
@@ -27,15 +29,15 @@ const SongCard = ({ song, onPlay }) => {
         </div>
         <div className="px-1">
           <h2 className='text-white font-medium text-sm mb-1 truncate'>
-            {song.title}
+            {album.title}
           </h2>
           <div className='text-gray-500 text-xs'>
-            {song.artist.map((artist, index) => (
+            {/* {album.artist.map((artist, index) => (
               <span key={artist._id}>
                 {artist.name}
-                {index < song.artist.length - 1 ? ', ' : ''}
+                {index < album.artist.length - 1 ? ', ' : ''}
               </span>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
@@ -43,4 +45,4 @@ const SongCard = ({ song, onPlay }) => {
   );
 };
 
-export default SongCard;
+export default AlbumCard;

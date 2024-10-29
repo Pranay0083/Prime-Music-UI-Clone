@@ -1,31 +1,25 @@
 import React, { useState, useRef } from "react";
-import SongCard from "./SongCard";
-import MusicPlayer from '../layout/MusicPlayer';
+import AlbumCard from "./AlbumCard";
 
-const CategorySection = ({ title, songs }) => {
+const CategorySection = ({ title, albums }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollContainerRef = useRef(null);
-  const [currentTrack, setCurrentTrack] = useState(null);
 
   const handleScroll = (direction) => {
     const container = scrollContainerRef.current;
     if (!container) return;
-
     const scrollAmount = 1500;
     const newPosition =
       direction === "left"
         ? scrollPosition - scrollAmount
         : scrollPosition + scrollAmount;
-
     container.scrollTo({
       left: newPosition,
       behavior: "smooth",
     });
-
     setScrollPosition(newPosition);
   };
 
-  console.log(currentTrack)
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
@@ -37,7 +31,7 @@ const CategorySection = ({ title, songs }) => {
               className="p-2 rounded-full hover:bg-neutral-800/50 transition-colors"
               aria-label="Scroll left"
             >
-            <i className="fa-solid fa-chevron-left w-6 h-6 text-neutral-300"></i>
+              <i className="fa-solid fa-chevron-left w-6 h-6 text-neutral-300"></i>
             </button>
             <button
               onClick={() => handleScroll("right")}
@@ -47,23 +41,15 @@ const CategorySection = ({ title, songs }) => {
               <i className="fa-solid fa-chevron-right w-6 h-6 text-neutral-300"></i>
             </button>
           </div>
-          {/* <button className="text-sm text-neutral-400 hover:text-white transition-colors">
-            See all
-          </button> */}
         </div>
       </div>
-
-      <div
-        ref={scrollContainerRef}
-        className="flex overflow-hidden gap-4"
-      >
-        {songs.map((song) => (
-          <div key={song._id} className="flex-shrink-0" onClick={() => setCurrentTrack(song.trackUrl)}>
-            <SongCard song={song} onPlay={() => setCurrentTrack(song.trackUrl)} />
+      <div ref={scrollContainerRef} className="flex overflow-hidden gap-4">
+        {albums.map((album) => (
+          <div key={album._id} className="flex-shrink-0">
+            <AlbumCard album={album} />
           </div>
         ))}
       </div>
-      {currentTrack && <MusicPlayer currentTrack={currentTrack} />}
     </div>
   );
 };

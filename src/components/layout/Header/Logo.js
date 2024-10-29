@@ -8,7 +8,7 @@ function Logo() {
       src={img}
       alt="Amazon Music Logo"
       className="h-7 cursor-pointer"
-      onClick={() => navigate('/')}
+      onClick={() => navigate(0)}
     />
 }
 

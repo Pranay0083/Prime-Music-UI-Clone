@@ -1,52 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
 
 const SearchResults = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const location = useLocation();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const token = localStorage.getItem('token');  // Get token from local storage
+  useEffect(() => {
+    const fetchSearchResults = async () => {
+      const query = new URLSearchParams(location.search).get('q');
+      if (!query) return;
 
-    try {
-      const response = await api.search(token, searchQuery);
-      setResults(response.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch search results. Please try again later.');
-      console.error('Error fetching search results:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+      setLoading(true);
+      const token = localStorage.getItem('token');
+
+      try {
+        const response = await api.search(token, query);
+        setResults(response.data);
+        setError(null);
+      } catch (err) {
+        setError('Failed to fetch search results. Please try again later.');
+        console.error('Error fetching search results:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSearchResults();
+  }, [location.search]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      <h1>Search Results</h1>
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search for songs, artists, albums, or moods"
-        />
-        <button type="submit">Search</button>
-      </form>
-      <h2>Results</h2>
+    <div className="p-8 text-white">
+      <h1 className="text-2xl font-bold mb-4">Search Results</h1>
       {results.length > 0 ? (
-        <div className="search-results">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {results.map((result) => (
-            <div key={result._id} className="search-result-card">
-              <img src={result.thumbnail} alt={result.title} />
-              <p>{result.title}</p>
-              <p>{result.artist.map(artist => artist.name).join(', ')}</p>
+            <div key={result._id} className="search-result-card bg-gray-800 p-4 rounded-lg">
+              <img src={result.thumbnail} alt={result.title} className="mb-2 rounded-lg" />
+              <p className="text-lg font-bold">{result.title}</p>
+              <p className="text-gray-400">{result.artist.map(artist => artist.name).join(', ')}</p>
             </div>
           ))}
         </div>

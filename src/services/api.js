@@ -73,7 +73,7 @@ export const api = {
         return response.data;
     },
     search: async (token, query) => {
-        const response = await axios.get(`${BASE_URL}/song?search=${encodeURIComponent(JSON.stringify(query))}`, {
+        const response = await axios.get(`${BASE_URL}/song?search=${encodeURIComponent(JSON.stringify({ title: query }))}`, {
             headers: getHeaders(token)
         });
         return response.data;

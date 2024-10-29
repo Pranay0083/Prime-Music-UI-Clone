@@ -12,7 +12,7 @@ const SearchView = () => {
     const fetchMoods = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');  // Get token from local storage
+        const token = localStorage.getItem('token');
         const response = await api.fetchMoodTypes(token);
         setMoods(response.data);
         setError(null);
@@ -32,14 +32,7 @@ const SearchView = () => {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-white mb-6">Search</h1>
-      <input
-        type="text"
-        placeholder="Search for songs, artists, albums, or moods"
-        className="w-full p-3 rounded-lg mb-6"
-        onClick={() => navigate('/search/results')}
-      />
-      <h2 className="text-xl font-semibold text-white mb-4">Mood Types</h2>
+      <h2 className="text-xl font-semibold text-white mb-4 pt-16">Mood Types</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {moods.map((mood) => (
           <button

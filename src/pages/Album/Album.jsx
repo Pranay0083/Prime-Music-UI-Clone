@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import CategorySection from '../../components/features/AlbumSection';
 
 const Album = () => {
   const [albums, setAlbums] = useState([]);
@@ -23,7 +24,6 @@ const Album = () => {
         setLoading(false);
       }
     };
-
     fetchAlbums();
   }, []);
 
@@ -31,16 +31,8 @@ const Album = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      <h1>Albums</h1>
-      <ul>
-        {albums.map((album) => (
-          <li key={album._id} onClick={() => navigate(`/album/${album._id}`)} style={{ cursor: 'pointer' }}>
-            <h2>{album.title}</h2>
-            <p>{album.artists.map(artist => artist.name).join(', ')}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="max-w-full mx-20 mt-28">
+      <CategorySection title="Album Category" albums={albums} />
     </div>
   );
 };

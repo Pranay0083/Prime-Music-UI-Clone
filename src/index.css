@@ -2,10 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
-    margin: 0;
-    padding: 0;
-    background: black;
-    color: white;
-    font-family: 'Calibri Light', sans-serif;
+/* Reset default styles but don't set global background */
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Calibri Light', sans-serif;
+}
+
+/* Set body background */
+body {
+  background-color: black;
+  color: white;
+}
+
+/* Header specific styles */
+.header-container {
+  @apply fixed top-0 left-0 right-0 z-50 h-[71px] px-14 border-b-2 border-gray-800;
+  @apply flex justify-between items-center;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+/* Reset background for header components */
+.header-container * {
+  background: transparent !important;
+}
+
+/* SearchBar specific styles */
+.search-bar {
+  @apply flex items-center rounded-full h-10 px-6 w-[256px] justify-between cursor-pointer;
+  background: white !important;
+}
+
+.search-bar * {
+  @apply text-gray-700;
+  background: transparent !important;
+}
+
+/* Responsive padding for header */
+@media (max-width: 1024px) {
+  .header-container {
+    @apply px-8;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    @apply px-4;
+  }
+}
+
+/* Library dropdown styles */
+.library-dropdown {
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Profile dropdown styles */
+.profile-dropdown {
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(8px);
 }
