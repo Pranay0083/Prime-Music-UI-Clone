@@ -13,31 +13,44 @@ const AlbumHeader = ({ album }) => {
   };
 
   return (
-    <div className="flex space-x-8 mb-8">
-      <div className="w-64 h-64">
-        <img src={album.image} alt="Cover Art" className="object-cover w-full h-full" />
+    <div className="flex flex-col md:flex-row items-start gap-8 mb-8">
+      <div className="relative group w-64 h-64 flex-shrink-0">
+        <img 
+          src={album.image || "/api/placeholder/256/256"} 
+          alt={album.title}
+          className="w-full h-full object-cover rounded-lg shadow-xl group-hover:opacity-75 transition-opacity duration-300"
+        />
       </div>
-      <div className="flex flex-col justify-end pb-8">
-        <div className="text-teal-400 uppercase text-sm mb-2">ALBUM</div>
-        <h1 className="text-5xl font-bold mb-4">{album.title}</h1>
-        <div className="text-gray-400 mb-2">
-          {album.artists.map(artist => (
-            <span
-              key={artist._id}
-              className="cursor-pointer hover:underline"
-              onClick={() => goToArtistPage(artist._id)}
-            >
-              {artist.name}
-            </span>
+      
+      <div className="flex flex-col justify-end">
+        <span className="text-sm font-medium uppercase tracking-wider text-gray-400">ALBUM</span>
+        <h1 className="text-4xl font-bold mt-2 mb-4">{album.title}</h1>
+        
+        <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+          {album.artists.map((artist, index) => (
+            <React.Fragment key={artist._id}>
+              <button
+                onClick={() => goToArtistPage(artist._id)}
+                className="hover:text-white hover:underline transition-colors"
+              >
+                {artist.name}
+              </button>
+              {index < album.artists.length - 1 && <span>•</span>}
+            </React.Fragment>
           ))}
+          <span>•</span>
+          <span>{album.songs.length} songs</span>
         </div>
-        <div className="text-gray-400 mb-4">{album.songs.length} songs</div>
-        <button
-          className="bg-teal-400 text-black px-8 py-2 rounded-full hover:bg-teal-300 transition-colors"
-          onClick={playAllSongs}
-        >
-          Play
-        </button>
+        
+        <div className="flex items-center gap-4">
+          <button
+            onClick={playAllSongs}
+            className="flex items-center gap-2 bg-green-500 hover:bg-green-400 text-black font-semibold py-3 px-6 rounded-full transition-colors"
+          >
+            <i class="fa-solid fa-play"></i>
+            Play
+          </button>
+        </div>
       </div>
     </div>
   );

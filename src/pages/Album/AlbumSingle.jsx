@@ -28,14 +28,25 @@ const AlbumSingle = () => {
     fetchAlbum();
   }, [id]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-red-500 bg-red-100 p-4 rounded-lg">
+        Error: {error}
+      </div>
+    </div>
+  );
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-8 py-32">
       <AlbumHeader album={album} />
       <SongList songs={album.songs} />
-    </main>
+    </div>
   );
 };
 
