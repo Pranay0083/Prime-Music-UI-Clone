@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import SampleImg from "../../assets/images/profileImageifnotAvailable.jpg";
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -11,9 +12,10 @@ const Profile = () => {
   const [newEmail, setNewEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [playlists, setPlaylists] = useState([]);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -74,6 +76,25 @@ const Profile = () => {
       console.error("Error updating profile image:", err);
     }
   };
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token"); // Get token from local storage
+        const response = await api.fetchPlaylists(token);
+        setPlaylists(response.data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch playlists. Please try again later.");
+        console.error("Error fetching playlists:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlaylists();
+  }, []);
 
   if (loading) return <div className="text-center p-8">Loading...</div>;
   if (error) return <div className="text-red-500 p-8">Error: {error}</div>;
@@ -167,7 +188,9 @@ const Profile = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">Change Password</h2>
+              <h2 className="text-xl font-bold text-gray-800">
+                Change Password
+              </h2>
               <button
                 onClick={() => setShowPasswordModal(false)}
                 className="text-gray-500 hover:text-gray-700"
@@ -221,6 +244,20 @@ const Profile = () => {
           </div>
         </div>
       )}
+      <div>
+        <h1>Playlists</h1>
+        <ul>
+          {playlists.map((playlist) => (
+            <li
+              key={playlist._id}
+              onClick={() => navigate(`/playlist/${playlist._id}`)}
+              style={{ cursor: "pointer" }}
+            >
+              <p>{playlist.title}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

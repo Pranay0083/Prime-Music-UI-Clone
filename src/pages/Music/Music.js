@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
+import CategorySection from '../../components/features/CategorySection';
+import LoadingState from '../../components/common/LoadingState';
+import ErrorState from '../../components/common/ErrorState';
+import { categories } from '../../components/constants/categories';
 
 const Music = () => {
   const [songs, setSongs] = useState([]);
@@ -10,9 +14,15 @@ const Music = () => {
     const fetchSongs = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');  // Get token from local storage
-        const response = await api.fetchSongs(token);
-        setSongs(response.data);
+        const token = localStorage.getItem('token');
+        let allSongs = [];
+        
+        for (let category of categories) {
+          const response = await api.fetchSongsByCategory(token, category.key, category.value, 15);
+          allSongs.push({ category: category.name, songs: response.data });
+        }
+        
+        setSongs(allSongs);
         setError(null);
       } catch (err) {
         setError('Failed to fetch songs. Please try again later.');
@@ -25,19 +35,18 @@ const Music = () => {
     fetchSongs();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <LoadingState />;
+  if (error) return <ErrorState message={error} />;
 
   return (
-    <div>
-      <h1>Music Page</h1>
-      <ul>
-        {songs.map((song) => (
-          <li key={song._id}>
-            <p>{song.title} by {song.artist.map(artist => artist.name).join(', ')}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="max-w-full mx-20 mt-28">
+      {songs.map((categoryData) => (
+        <CategorySection
+          key={categoryData.category}
+          title={categoryData.category}
+          songs={categoryData.songs}
+        />
+      ))}
     </div>
   );
 };

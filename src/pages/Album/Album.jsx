@@ -12,7 +12,7 @@ const Album = () => {
     const fetchAlbums = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');  // Get token from local storage
+        const token = localStorage.getItem('token');
         const response = await api.fetchAlbums(token);
         setAlbums(response.data);
         setError(null);

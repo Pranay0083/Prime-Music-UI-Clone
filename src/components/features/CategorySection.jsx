@@ -9,7 +9,7 @@ const CategorySection = ({ title, songs }) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const scrollAmount = 1000;
+    const scrollAmount = 1500;
     const newPosition =
       direction === "left"
         ? scrollPosition - scrollAmount
@@ -34,14 +34,14 @@ const CategorySection = ({ title, songs }) => {
               className="p-2 rounded-full hover:bg-neutral-800/50 transition-colors"
               aria-label="Scroll left"
             >
-            <i class="fa-solid fa-chevron-left w-6 h-6 text-neutral-300"></i>
+            <i className="fa-solid fa-chevron-left w-6 h-6 text-neutral-300"></i>
             </button>
             <button
               onClick={() => handleScroll("right")}
               className="p-2 rounded-full hover:bg-neutral-800/50 transition-colors"
               aria-label="Scroll right"
             >
-              <i class="fa-solid fa-chevron-right w-6 h-6 text-neutral-300"></i>
+              <i className="fa-solid fa-chevron-right w-6 h-6 text-neutral-300"></i>
             </button>
           </div>
           <button className="text-sm text-neutral-400 hover:text-white transition-colors">

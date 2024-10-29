@@ -157,4 +157,10 @@ export const api = {
         });
         return response.data;
     },
+    fetchSongsByMood: async (token, mood) => {
+        const response = await axios.get(`${BASE_URL}/song?mood=${mood}`, {
+            headers: getHeaders(token)
+        });
+        return response.data;
+    },
 };

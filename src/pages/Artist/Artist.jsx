@@ -25,7 +25,7 @@ const Artist = () => {
         setLoading(false);
       }
     };
-
+    
     fetchArtistDetails();
   }, [id]);
 
@@ -37,37 +37,40 @@ const Artist = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      <h1>Artist Details</h1>
-      {artist ? (
-        <div>
-          <img src={artist.image} alt={artist.name} />
-          <h2>{artist.name}</h2>
-          <p>{artist.description}</p>
-          <button onClick={handlePlayAll}>Play All</button>
-          <h3>Songs</h3>
-          <div className="songs-grid">
-            {artist.songs.map((song) => (
-              <div key={song._id} className="song-card">
-                <img src={song.thumbnail} alt={song.title} />
-                <p>{song.title} by {artist.name}</p>
-              </div>
-            ))}
-          </div>
-          <h3>Albums</h3>
-          <div className="albums-grid">
-            {artist.albums?.map((album) => (
-              <div key={album._id} className="album-card">
-                <img src={album.thumbnail} alt={album.title} />
-                <p>{album.title}</p>
-              </div>
-            ))}
-          </div>
-          <MusicPlayer currentTrack={currentTrack} trackList={artist.songs} />
+    <div className="bg-black min-h-screen text-white p-8">
+      <div className="flex items-start space-x-8 mb-12">
+        <div className="w-64 h-64 bg-gray-800 rounded-full flex items-center justify-center">
+          <img src={artist.image} alt={artist.name} className="rounded-full w-full h-full object-cover" />
         </div>
-      ) : (
-        <p>No artist details found.</p>
-      )}
+        <div>
+          <h1 className="text-5xl font-bold mb-4">{artist.name}</h1>
+          <p className="text-gray-400 max-w-2xl">
+            {artist.description}
+          </p>
+        </div>
+      </div>
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold mb-6">Songs</h2>
+        <div className="relative">
+          <div className="flex space-x-4 overflow-x-auto">
+            {artist.songs && artist.songs.map((song, index) => (
+              <div key={index} className="flex-none w-48">
+                <div className="w-48 h-48 bg-gray-800 mb-2">
+                  <img src={song.thumbnail} alt={song.title} className="object-cover w-full h-full" />
+                </div>
+                <div className="text-white">{song.title}</div>
+                <div className="text-gray-400 text-sm">{song.artist.map(artist => artist.name).join(', ')}</div>
+              </div>
+            ))}
+          </div>
+          <button className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full">
+            <i className="fa-solid fa-chevron-left h-6 w-6"></i>
+          </button>
+          <button className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black/50 p-2 rounded-full">
+            <i className="fa-solid fa-chevron-right  h-6 w-6"></i>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
