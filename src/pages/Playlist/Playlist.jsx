@@ -34,25 +34,6 @@ const PlaylistDetails = () => {
     // api call
   };
 
-  const handleAddSong = async (songId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await api.updatePlaylist(token, id, songId);
-      setPlaylist({ ...playlist, songs: [...playlist.songs, songId] });
-    } catch (err) {
-      console.error('Error adding song to playlist:', err);
-    }
-  };
-
-  const handleRemoveSong = async (songId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await api.updatePlaylist(token, id, songId);
-      setPlaylist({ ...playlist, songs: playlist.songs.filter(song => song._id !== songId) });
-    } catch (err) {
-      console.error('Error removing song from playlist:', err);
-    }
-  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../../services/api';
-import MusicPlayer from '../../components/layout/MusicPlayer';
 
 const Artist = () => {
   const { id } = useParams();
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentTrack, setCurrentTrack] = useState(null);
 
   useEffect(() => {
     const fetchArtistDetails = async () => {
@@ -30,7 +28,7 @@ const Artist = () => {
   }, [id]);
 
   const handlePlayAll = () => {
-    setCurrentTrack(artist.songs[0]);
+    console.log("all songs are playing")
   };
 
   if (loading) {
@@ -105,7 +103,6 @@ const Artist = () => {
               <div
                 key={song.id}
                 className="group flex items-center gap-4 p-4 hover:bg-gray-700/30 transition-colors duration-200 border-b border-gray-700/50 last:border-0"
-                onClick={() => setCurrentTrack(song)}
               >
                 <div className="w-12 text-gray-400 text-center">{index + 1}</div>
                 <div className="flex-1">
@@ -119,13 +116,6 @@ const Artist = () => {
           </div>
         </div>
       </div>
-
-      {/* Music Player */}
-      {currentTrack && (
-        <div className="fixed bottom-0 left-0 right-0 z-50">
-          <MusicPlayer track={currentTrack} />
-        </div>
-      )}
     </div>
   );
 };

@@ -1,42 +1,26 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../services/api";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import LoadingState from "../common/LoadingState";
+import ErrorState from "../common/ErrorState";
 
-const AlbumCategoryView = () => {
-  const [albums, setAlbums] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const Album = ({ albums = [], loading = false }) => {
   const navigate = useNavigate();
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollContainerRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    const fetchAlbums = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const response = await api.fetchAlbums(token);
-        setAlbums(response.data);
-        setError(null);
-      } catch (err) {
-        setError("Failed to fetch albums. Please try again later.");
-        console.error("Error fetching albums:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAlbums();
-  }, []);
-
   const handleScroll = (direction) => {
     const container = scrollContainerRef.current;
     if (!container) return;
+
     const scrollAmount = 1500;
-    const newPosition =
-      direction === "left"
-        ? scrollPosition - scrollAmount
-        : scrollPosition + scrollAmount;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    
+    const newPosition = direction === "left"
+      ? Math.max(0, scrollPosition - scrollAmount)
+      : Math.min(maxScroll, scrollPosition + scrollAmount);
+
     container.scrollTo({
       left: newPosition,
       behavior: "smooth",
@@ -44,54 +28,62 @@ const AlbumCategoryView = () => {
     setScrollPosition(newPosition);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <LoadingState />;
+
+  if (!albums.length) {
+    return (
+      <div className="mt-8 p-4 rounded-lg bg-neutral-800/20">
+        <p className="text-neutral-400 text-center">No albums available</p>
+      </div>
+    );
+  }
+
+  const isAtStart = scrollPosition === 0;
+  const isAtEnd = scrollPosition >= (scrollContainerRef.current?.scrollWidth - scrollContainerRef.current?.clientWidth);
 
   return (
-    <div className="mt-8">
+    <div>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-neutral-300">Albums</h1>
         <div className="flex items-center gap-4">
           <div className="flex gap-2">
             <button
               onClick={() => handleScroll("left")}
-              className="p-2 rounded-full hover:bg-neutral-800/50 transition-colors"
+              disabled={isAtStart}
+              className={`p-2 rounded-full transition-all duration-200 
+                ${isAtStart 
+                  ? 'text-neutral-600 cursor-not-allowed' 
+                  : 'text-neutral-300 hover:bg-neutral-800/50'}`}
               aria-label="Scroll left"
             >
-              <i className="fa-solid fa-chevron-left w-6 h-6 text-neutral-300"></i>
+              <ChevronLeft className="w-6 h-6" />
             </button>
             <button
               onClick={() => handleScroll("right")}
-              className="p-2 rounded-full hover:bg-neutral-800/50 transition-colors"
+              disabled={isAtEnd}
+              className={`p-2 rounded-full transition-all duration-200
+                ${isAtEnd
+                  ? 'text-neutral-600 cursor-not-allowed'
+                  : 'text-neutral-300 hover:bg-neutral-800/50'}`}
               aria-label="Scroll right"
             >
-              <i className="fa-solid fa-chevron-right w-6 h-6 text-neutral-300"></i>
+              <ChevronRight className="w-6 h-6" />
             </button>
           </div>
-          {/* <button className="text-sm text-neutral-400 hover:text-white transition-colors">
-            See all
-          </button> */}
         </div>
       </div>
 
-      <div ref={scrollContainerRef} className="flex overflow-hidden gap-4">
-        {/* {songs.map((song) => (
-          <div
-            key={song._id}
-            className="flex-shrink-0"
-            onClick={() => setCurrentTrack(song.trackUrl)}
-          >
-            <SongCard
-              song={song}
-              onPlay={() => setCurrentTrack(song.trackUrl)}
-            />
-          </div>
-        ))} */}
+      <div 
+        ref={scrollContainerRef} 
+        className="flex overflow-x-hidden gap-4 scroll-smooth"
+      >
         {albums.map((album) => (
           <div
             key={album._id}
             className="flex-shrink-0 cursor-pointer transition-transform mr-4 group"
             onClick={() => navigate(`/album/${album._id}`)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
             <div className="w-[175px]">
               <div className="relative flex">
@@ -102,14 +94,13 @@ const AlbumCategoryView = () => {
                 />
                 <div
                   className={`absolute right-12 top-1/2 -translate-y-1/2 bg-black/20 p-2 rounded-full
-          transition-all duration-300 backdrop-blur-md h-20 w-20
-          ${
-            isHovered
-              ? "opacity-100 translate-x-0 hover:brightness-50"
-              : "opacity-0 translate-x-4"
-          }`}
+                    transition-all duration-300 backdrop-blur-md h-20 w-20
+                    ${isHovered
+                      ? "opacity-100 translate-x-0 hover:brightness-50"
+                      : "opacity-0 translate-x-4"
+                    }`}
                 >
-                  <i className="fa-solid fa-chevron-right w-6 h-6 text-white bg-transparent absolute right-5 top-8"></i>
+                  <ChevronRight className="w-6 h-6 text-white absolute right-5 top-8" />
                 </div>
               </div>
               <div className="px-1">
@@ -133,4 +124,4 @@ const AlbumCategoryView = () => {
   );
 };
 
-export default AlbumCategoryView;
+export default Album;

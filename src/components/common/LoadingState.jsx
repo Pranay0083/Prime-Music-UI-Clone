@@ -6,7 +6,7 @@ const LoadingBars = () => (
     {[...Array(4)].map((_, i) => (
       <div
         key={i}
-        className="w-1 bg-red-500 rounded-t animate-pulse"
+        className="w-1 bg-cyan-500 rounded-t animate-pulse"
         style={{
           height: `${Math.max(40, Math.random() * 100)}%`,
           animationDelay: `${i * 0.2}s`

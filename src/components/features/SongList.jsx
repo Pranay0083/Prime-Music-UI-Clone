@@ -1,7 +1,6 @@
 import React from "react";
 
 const SongList = ({ songs }) => {
-  console.log(songs)
   return (
     <div className="mt-8">
       <table className="w-full">

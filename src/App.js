@@ -3,10 +3,10 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AuthProvider, AuthContext } from './contexts/authContext';
 import ProtectedRoute from './components/features/ProtectedRoute';
 
+const Loading = lazy(() => import('./components/common/LoadingState'));
 const LoggedInHome = lazy(() => import('./pages/Home/LoggedInHome'));
 const LoggedOutHome = lazy(() => import('./pages/Home/LoggedOutHome'));
 const Music = lazy(() => import('./pages/Music/Music'));
-// const Album = lazy(() => import('./pages/Album/Album'));
 const AlbumDetails = lazy(() => import('./pages/Album/AlbumSingle'));
 const Favourite = lazy(() => import('./pages/Favourites/Favourites'));
 const ArtistDetails = lazy(() => import('./pages/Artist/Artist'));
@@ -26,34 +26,36 @@ function Layout() {
   const location = useLocation();
   const { isAuthenticated } = useContext(AuthContext);
   const showHeader = ['/', '/music', '/album', '/favourite', '/search', '/mood', '/profile', '/playlist', '/artist'].includes(location.pathname) 
-  || location.pathname.startsWith('/album/') 
-  || location.pathname.startsWith('/artist/') 
-  || location.pathname.startsWith('/search/')
-  || location.pathname.startsWith('/mood/');
+    || location.pathname.startsWith('/album/')
+    || location.pathname.startsWith('/artist/')
+    || location.pathname.startsWith('/search/')
+    || location.pathname.startsWith('/mood/');
   const showFooter = ['/signup', '/signin', '/subscription'].includes(location.pathname);
 
   return (
     <>
       {showHeader && <Header />}
-      <Routes>
-        <Route path="/" element={isAuthenticated ? <LoggedInHome /> : <LoggedOutHome />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/signin" element={<Signin />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/music" element={<Music />} />
-          {/* <Route path="/album" element={<Album />} /> */}
-          <Route path="/album/:id" element={<AlbumDetails />} />
-          <Route path="/favourite" element={<Favourite />} />
-          <Route path="/artist/:id" element={<ArtistDetails />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/search/results" element={<SearchResults />} />
-          <Route path="/mood/:type" element={<Mood />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/playlist/:id" element={<Playlist />} />
-        </Route>
-        <Route path="/subscription" element={<Subscription />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/" element={isAuthenticated ? <LoggedInHome /> : <LoggedOutHome />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/music" element={<Music />} />
+            {/* <Route path="/album" element={<Album />} /> */}
+            <Route path="/album/:id" element={<AlbumDetails />} />
+            <Route path="/favourite" element={<Favourite />} />
+            <Route path="/artist/:id" element={<ArtistDetails />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/search/results" element={<SearchResults />} />
+            <Route path="/mood/:type" element={<Mood />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/playlist/:id" element={<Playlist />} />
+          </Route>
+          <Route path="/subscription" element={<Subscription />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
       {showFooter && <Footer />}
     </>
   );
@@ -63,7 +65,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <Layout />
         </Suspense>
       </Router>
