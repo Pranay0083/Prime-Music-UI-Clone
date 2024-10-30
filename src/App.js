@@ -1,10 +1,10 @@
 import React, { Suspense, lazy, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './contexts/authContext';
-import ProtectedRoute from './components/features/ProtectedRoute.js';
+import ProtectedRoute from './components/features/ProtectedRoute';
 
 const LoggedInHome = lazy(() => import('./pages/Home/LoggedInHome'));
-const LoggedOutHome = lazy(() => import('./pages/Home/LoggedOutHome.jsx'));
+const LoggedOutHome = lazy(() => import('./pages/Home/LoggedOutHome'));
 const Music = lazy(() => import('./pages/Music/Music'));
 // const Album = lazy(() => import('./pages/Album/Album'));
 const AlbumDetails = lazy(() => import('./pages/Album/AlbumSingle'));
