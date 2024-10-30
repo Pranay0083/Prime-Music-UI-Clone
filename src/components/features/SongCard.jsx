@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const SongCard = ({ song, onPlay, onLike, isLiked }) => {
+const SongCard = ({ song, onPlay, isLiked }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (

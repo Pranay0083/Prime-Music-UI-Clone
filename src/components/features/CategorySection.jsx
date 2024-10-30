@@ -4,7 +4,6 @@ import SongCard from "./SongCard";
 const CategorySection = ({ title, songs }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollContainerRef = useRef(null);
-  const [currentTrack, setCurrentTrack] = useState(null);
 
   const handleScroll = (direction) => {
     const container = scrollContainerRef.current;
@@ -24,7 +23,6 @@ const CategorySection = ({ title, songs }) => {
     setScrollPosition(newPosition);
   };
 
-  console.log(currentTrack)
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
@@ -57,8 +55,8 @@ const CategorySection = ({ title, songs }) => {
         className="flex overflow-hidden gap-4"
       >
         {songs.map((song) => (
-          <div key={song._id} className="flex-shrink-0" onClick={() => setCurrentTrack(song.trackUrl)}>
-            <SongCard song={song} onPlay={() => setCurrentTrack(song.trackUrl)} />
+          <div key={song._id} className="flex-shrink-0">
+            <SongCard song={song} />
           </div>
         ))}
       </div>
