@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const SongCard = ({ song, onPlay }) => {
+const SongCard = ({ song, onPlay, onLike, isLiked }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -8,7 +8,6 @@ const SongCard = ({ song, onPlay }) => {
       className='flex-shrink-0 cursor-pointer transition-transform mr-4 group'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={onPlay}
     >
       <div className='w-[175px]'>
         <div className='relative flex'>
@@ -20,9 +19,15 @@ const SongCard = ({ song, onPlay }) => {
           <div
             className={`absolute right-12 top-1/2 -translate-y-1/2 bg-black/20 p-2 rounded-full
               transition-all duration-300 backdrop-blur-md h-20 w-20
-              ${isHovered ? 'opacity-100 translate-x-0 hover:brightness-50' : 'opacity-0 translate-x-4'}`}
+              ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}
           >
-            <i className="fa-solid fa-chevron-right w-6 h-6 text-white bg-transparent absolute right-5 top-8"></i>
+            {isLiked ? (
+              <i className="fa-solid fa-check text-green-500 absolute top-8"></i>
+            ) : (
+              <i className="fa-solid fa-plus text-gray-500 absolute top-8"></i>
+            )}
+            <i className="fa-solid fa-play w-6 h-6 text-white bg-transparent absolute right-5 top-8 cursor-pointer" onClick={onPlay}></i>
+            <i className="fa-solid fa-ellipsis-vertical text-gray-500 absolute top-8 right-2"></i>
           </div>
         </div>
         <div className="px-1">

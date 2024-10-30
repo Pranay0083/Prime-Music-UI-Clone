@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import SongCard from "./SongCard";
-import MusicPlayer from '../layout/MusicPlayer';
 
 const CategorySection = ({ title, songs }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -63,7 +62,6 @@ const CategorySection = ({ title, songs }) => {
           </div>
         ))}
       </div>
-      {currentTrack && <MusicPlayer currentTrack={currentTrack} />}
     </div>
   );
 };

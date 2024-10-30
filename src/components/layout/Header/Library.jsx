@@ -22,7 +22,7 @@ function Library() {
         onMouseEnter={() => setShowLib(true)} 
         onMouseLeave={() => setShowLib(false)}>
           <MenuItem text="Music" onClick={() => navigate('/music')} />
-          <MenuItem text="Albums" onClick={() => navigate('/album')} />
+          <MenuItem text="More paths" onClick={() => navigate('/')} />
         </div>
       )}
     </div>

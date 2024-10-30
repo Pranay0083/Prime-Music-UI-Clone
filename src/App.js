@@ -6,7 +6,7 @@ import ProtectedRoute from './components/features/ProtectedRoute.js';
 const LoggedInHome = lazy(() => import('./pages/Home/LoggedInHome'));
 const LoggedOutHome = lazy(() => import('./pages/Home/LoggedOutHome.jsx'));
 const Music = lazy(() => import('./pages/Music/Music'));
-const Album = lazy(() => import('./pages/Album/Album'));
+// const Album = lazy(() => import('./pages/Album/Album'));
 const AlbumDetails = lazy(() => import('./pages/Album/AlbumSingle'));
 const Favourite = lazy(() => import('./pages/Favourites/Favourites'));
 const ArtistDetails = lazy(() => import('./pages/Artist/Artist'));
@@ -41,7 +41,7 @@ function Layout() {
         <Route path="/signin" element={<Signin />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/music" element={<Music />} />
-          <Route path="/album" element={<Album />} />
+          {/* <Route path="/album" element={<Album />} /> */}
           <Route path="/album/:id" element={<AlbumDetails />} />
           <Route path="/favourite" element={<Favourite />} />
           <Route path="/artist/:id" element={<ArtistDetails />} />
