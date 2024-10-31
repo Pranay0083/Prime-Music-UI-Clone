@@ -1,39 +1,80 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaPlus, FaCheck, FaEllipsisV, FaPlay } from "react-icons/fa";
 
-const SongCard = ({ song, onPlay, isLiked, onLike }) => {
+const SongCard = ({ song, isLiked }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMenuOpenInside, setIsMenuOpenInside] = useState(false);
+  const [showMainMenu, setShowMainMenu] = useState(false);
+  const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
   const menuRef = useRef(null);
-  const menuRef2 = useRef(null);
+  const playlistMenuRef = useRef(null);
 
-  const handleMenuToggleInside = () => {
-    console.log(isMenuOpenInside)
-    setIsMenuOpenInside((prev) => !prev);
-    console.log(isMenuOpenInside)
-  }
-
-  const handleMenuToggle = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
-  const handleClickOutside = (event) => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setIsMenuOpen(false);
-    }
-  };
-
+  // Handle clicking outside to close menus
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target) &&
+          playlistMenuRef.current && !playlistMenuRef.current.contains(event.target)) {
+        setShowMainMenu(false);
+        setShowPlaylistMenu(false);
+      }
     };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const MenuItem = ({ text, onClick }) => (
+    <div
+      className="p-2 text-sm text-gray-300 hover:bg-neutral-700 cursor-pointer transition-colors duration-200"
+      onClick={onClick}
+    >
+      {text}
+    </div>
+  );
+
+  const MenuDivider = () => <div className="h-px bg-neutral-700" />;
+
+  const MainMenu = () => (
+    <div
+      ref={menuRef}
+      className="absolute bg-neutral-800 rounded-md shadow-lg border border-neutral-700 min-w-[150px] left-40 top-16 z-10"
+    >
+      <MenuItem
+        text="Add to Playlist"
+        onClick={() => setShowPlaylistMenu(!showPlaylistMenu)}
+      />
+      <MenuDivider />
+      <MenuItem text="View Album" onClick={() => console.log('View Album clicked')} />
+      <MenuDivider />
+      <MenuItem text="View Artist" onClick={() => console.log('View Artist clicked')} />
+    </div>
+  );
+
+  const PlaylistMenu = () => (
+    <div
+      ref={playlistMenuRef}
+      className="absolute bg-neutral-800 rounded-md shadow-lg border border-neutral-700 min-w-[150px] left-72 top-16 z-10"
+    >
+      <MenuItem 
+        text="New Playlist" 
+        onClick={() => console.log('New Playlist clicked')} 
+      />
+      <MenuDivider />
+      <MenuItem 
+        text="Other playlists" 
+        onClick={() => console.log('Other playlists clicked')} 
+      />
+    </div>
+  );
+
+  const handleEllipsisClick = (e) => {
+    e.stopPropagation(); // Prevent event bubbling
+    setShowMainMenu(!showMainMenu);
+    setShowPlaylistMenu(false);
+  };
 
   return (
     <div
-      className="flex-shrink-0 cursor-pointer transition-transform mr-4 group"
+      className="flex-shrink-0 cursor-pointer transition-transform mr-4 group relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -51,32 +92,40 @@ const SongCard = ({ song, onPlay, isLiked, onLike }) => {
           >
             <div className="flex flex-row justify-center items-center w-full h-full space-x-5">
               {isLiked ? (
-                <FaCheck className="text-green-500 w-4 h-4 cursor-pointer" onClick={onLike} />
+                <FaCheck 
+                  className="text-green-500 w-4 h-4 cursor-pointer" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }} 
+                />
               ) : (
-                <FaPlus className="text-white w-4 h-4 cursor-pointer" onClick={onLike} />
+                <FaPlus 
+                  className="text-white w-4 h-4 cursor-pointer" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }} 
+                />
               )}
               <div className="bg-black/20 rounded-full transition-all backdrop-blur-md w-16 h-16 flex justify-center items-center">
-                <FaPlay className="w-6 h-6 text-white cursor-pointer" onClick={onPlay} />
+                <FaPlay 
+                  className="w-6 h-6 text-white cursor-pointer" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }} 
+                />
               </div>
-              <FaEllipsisV className="w-4 h-4 text-white cursor-pointer" onClick={handleMenuToggle} />
+              <div onClick={handleEllipsisClick}>
+                <FaEllipsisV className="w-4 h-4 text-white cursor-pointer" />
+              </div>
             </div>
           </div>
-          {isMenuOpen && (
-            <div ref={menuRef} className="absolute right-0 top-12 bg-white text-black rounded-md shadow-lg z-10">
-              <div className="p-2 hover:bg-gray-200 cursor-pointer" onClick={handleMenuToggleInside}>Add to Playlist</div>
-              <div className="p-2 hover:bg-gray-200 cursor-pointer">View Album</div>
-              <div className="p-2 hover:bg-gray-200 cursor-pointer">View Artist</div>
-            </div>
-          )}
-          {isMenuOpenInside && (
-            <div ref={menuRef2} className="absolute right-0 top-24 bg-white text-black rounded-md shadow-lg z-10">
-              <div className="p-2 hover:bg-gray-200 cursor-pointer">New Playlist</div>
-              <div className="p-2 hover:bg-gray-200 cursor-pointer">Other playlists</div>
-            </div>
-          )}
+          {showMainMenu && <MainMenu />}
+          {showPlaylistMenu && <PlaylistMenu />}
         </div>
         <div className="px-1">
-          <h2 className="text-white font-medium text-sm mb-1 truncate">{song.title}</h2>
+          <h2 className="text-white font-medium text-sm mb-1 truncate">
+            {song.title}
+          </h2>
           <div className="text-gray-500 text-xs">
             {song.artist.map((artist, index) => (
               <span key={artist._id}>
@@ -88,7 +137,7 @@ const SongCard = ({ song, onPlay, isLiked, onLike }) => {
         </div>
       </div>
     </div>
-  );  
+  );
 };
 
 export default SongCard;
