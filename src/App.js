@@ -34,7 +34,8 @@ function Layout() {
     || location.pathname.startsWith('/album/')
     || location.pathname.startsWith('/artist/')
     || location.pathname.startsWith('/search/')
-    || location.pathname.startsWith('/mood/');
+    || location.pathname.startsWith('/mood/')
+    || location.pathname.startsWith('/playlist/');
     
   const showFooter = ['/signup', '/signin', '/subscription'].includes(location.pathname);
   

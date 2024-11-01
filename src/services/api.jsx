@@ -126,7 +126,7 @@ export const api = {
         const response = await fetchWithRetry(`${BASE_URL}/playlist/${playlistId}`, {
             headers: getHeaders(token),
             method: 'PATCH',
-            data: JSON.stringify({ songId })
+            data: JSON.stringify({ playlistId ,songId })
         });
         return response;
     },

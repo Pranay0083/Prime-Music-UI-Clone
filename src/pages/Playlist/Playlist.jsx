@@ -29,6 +29,8 @@ const PlaylistDetails = () => {
     fetchPlaylistDetails();
   }, [id]);
 
+  console.log(playlist)
+
   const handleNameChange = (name) => {
     setPlaylistName(name);
     // api call

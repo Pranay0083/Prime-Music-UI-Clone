@@ -3,14 +3,20 @@ import { FaPlus, FaCheck, FaEllipsisV, FaPlay } from "react-icons/fa";
 import { useMusicPlayer } from '../../contexts/musicContext';
 import { api } from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import PlaylistCreationModal from './PlaylistCreationModal';
 
-const SongCard = ({ song, isLiked, onLikeToggle }) => {
+const SongCard = ({ song }) => {
   const { playTrack } = useMusicPlayer();
   const [isHovered, setIsHovered] = useState(false);
   const [showMainMenu, setShowMainMenu] = useState(false);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isCreatePlaylistModalOpen, setIsCreatePlaylistModalOpen] = useState(false);
   const menuRef = useRef(null);
   const playlistMenuRef = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [playlists, setPlaylists] = useState([]);
   const navigate = useNavigate();
 
   const handlePlay = async (e) => {
@@ -19,12 +25,49 @@ const SongCard = ({ song, isLiked, onLikeToggle }) => {
     const response = await api.fetchSongDetails(token, song._id);
     playTrack(response.data.audio_url, {
       title: song.title,
-      artist: Array.isArray(song.artist) 
+      artist: Array.isArray(song.artist)
         ? song.artist.map(a => a.name).join(", ")
         : song.artist,
       albumId: song.albumId
     });
   };
+
+  const onLikeToggle = async (e) => {
+    const token = localStorage.getItem('token');
+    const response = await api.toggleFavourite(token, song._id);
+    if (response.message === "song added to favorites successfully.") {
+      setIsLiked(true);
+    } else {
+      setIsLiked(false);
+    }
+  };
+
+  const addtoplaylist = async (playlistId) => {
+    // const token = localStorage.getItem('token');
+    // const response = await api.addSongToPlaylist(token, playlistId, song._id);
+    // if (response.status === "success"){
+    //   return;
+    // }
+    console.log("adding to playlist")
+  };  
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token");
+        const response = await api.fetchPlaylists(token);
+        setPlaylists(response.data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch playlists. Please try again later.");
+        console.error("Error fetching playlists:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPlaylists();
+  }, []);
 
   // Handle clicking outside to close menus
   useEffect(() => {
@@ -35,7 +78,6 @@ const SongCard = ({ song, isLiked, onLikeToggle }) => {
         setShowPlaylistMenu(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -64,13 +106,13 @@ const SongCard = ({ song, isLiked, onLikeToggle }) => {
         onClick={() => setShowPlaylistMenu(!showPlaylistMenu)}
       />
       <MenuDivider />
-      <MenuItem 
-        text="View Album" 
-        onClick={() => navigate(`/album/${song.albumId}`)}
+      <MenuItem
+        text="View Album"
+        onClick={() => navigate(`/album/${song.album}`)}
       />
       <MenuDivider />
-      <MenuItem 
-        text="View Artist" 
+      <MenuItem
+        text="View Artist"
         onClick={() => navigate(`/artist/${song.artist[0]?._id}`)}
       />
     </div>
@@ -79,19 +121,24 @@ const SongCard = ({ song, isLiked, onLikeToggle }) => {
   const PlaylistMenu = () => (
     <div
       ref={playlistMenuRef}
-      className="absolute bg-neutral-800 rounded-md shadow-lg border border-neutral-700 min-w-[150px] right-[-160px] top-0 z-20"
+      className="absolute bg-neutral-800 rounded-md shadow-lg border border-neutral-700 min-w-[150px] right-[-160px] top-0 z-20 max-h-60 overflow-y-auto"
     >
-      <MenuItem 
-        text="New Playlist" 
-        onClick={() => console.log('New Playlist clicked')} 
+      <MenuItem
+        text="New Playlist"
+        onClick={() => setIsCreatePlaylistModalOpen(true)}
       />
-      <MenuDivider />
-      <MenuItem 
-        text="Other playlists" 
-        onClick={() => console.log('Other playlists clicked')} 
-      />
+      {playlists.map((playlist, index) => (
+        <React.Fragment key={playlist._id || index}>
+          <MenuDivider />
+          <MenuItem
+            text={playlist.title}
+            onClick={() => addtoplaylist(playlist._id)}
+          />
+        </React.Fragment>
+      ))}
     </div>
   );
+  
 
   const handleEllipsisClick = (e) => {
     e.stopPropagation();
@@ -132,25 +179,25 @@ const SongCard = ({ song, isLiked, onLikeToggle }) => {
           >
             <div className="flex flex-row justify-between items-center w-full px-4">
               {isLiked ? (
-                <FaCheck 
-                  className="text-green-500 w-4 h-4 cursor-pointer hover:scale-110 transition-transform" 
+                <FaCheck
+                  className="text-green-500 w-4 h-4 cursor-pointer hover:scale-110 transition-transform"
                   onClick={handleLikeToggle}
                 />
               ) : (
-                <FaPlus 
-                  className="text-white w-4 h-4 cursor-pointer hover:scale-110 transition-transform" 
+                <FaPlus
+                  className="text-white w-4 h-4 cursor-pointer hover:scale-110 transition-transform"
                   onClick={handleLikeToggle}
                 />
               )}
-              <div 
+              <div
                 className="bg-black/20 rounded-full transition-all backdrop-blur-md w-16 h-16 flex justify-center items-center hover:scale-105 cursor-pointer"
                 onClick={handlePlay}
               >
                 <FaPlay className="w-6 h-6 text-white ml-1" />
               </div>
               <div className="relative">
-                <FaEllipsisV 
-                  className="w-4 h-4 text-white cursor-pointer hover:scale-110 transition-transform" 
+                <FaEllipsisV
+                  className="w-4 h-4 text-white cursor-pointer hover:scale-110 transition-transform"
                   onClick={handleEllipsisClick}
                 />
                 {showMainMenu && <MainMenu />}
@@ -177,6 +224,10 @@ const SongCard = ({ song, isLiked, onLikeToggle }) => {
           </div>
         </div>
       </div>
+      <PlaylistCreationModal
+        isCreatePlaylistModalOpen={isCreatePlaylistModalOpen}
+        setIsCreatePlaylistModalOpen={setIsCreatePlaylistModalOpen}
+      />
     </div>
   );
 };
