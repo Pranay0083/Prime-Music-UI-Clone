@@ -25,7 +25,8 @@ const Footer = lazy(() => import('./components/layout/Footer'));
 function Layout() {
   const location = useLocation();
   const { isAuthenticated } = useContext(AuthContext);
-  const showHeader = ['/', '/music', '/album', '/favourite', '/search', '/mood', '/profile', '/playlist', '/artist'].includes(location.pathname) 
+  const showHeader = ['/', '/music', '/album', '/favourite', '/search', '/mood', '/profile', '/playlist', '/artist']
+  .includes(location.pathname) 
     || location.pathname.startsWith('/album/')
     || location.pathname.startsWith('/artist/')
     || location.pathname.startsWith('/search/')
