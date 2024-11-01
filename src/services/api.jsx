@@ -163,4 +163,10 @@ export const api = {
         });
         return response.data;
     },
+    fetchSongDetails: async (token, songId) => {
+        const response = await axios.get(`${BASE_URL}/song/${songId}`, {
+            headers: getHeaders(token)
+        })
+        return response.data;
+    }
 };

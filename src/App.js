@@ -1,8 +1,10 @@
 import React, { Suspense, lazy, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './contexts/authContext';
+import { MusicProvider, useMusicPlayer } from './contexts/musicContext';
 import ProtectedRoute from './components/features/ProtectedRoute';
 
+const MusicPlayer = lazy(() => import('./components/layout/MusicPlayer'));
 const Loading = lazy(() => import('./components/common/LoadingState'));
 const LoggedInHome = lazy(() => import('./pages/Home/LoggedInHome'));
 const LoggedOutHome = lazy(() => import('./pages/Home/LoggedOutHome'));
@@ -25,16 +27,21 @@ const Footer = lazy(() => import('./components/layout/Footer'));
 function Layout() {
   const location = useLocation();
   const { isAuthenticated } = useContext(AuthContext);
+  const { currentTrack, currentTrackInfo } = useMusicPlayer();
+  
   const showHeader = ['/', '/music', '/album', '/favourite', '/search', '/mood', '/profile', '/playlist', '/artist']
-  .includes(location.pathname) 
+    .includes(location.pathname) 
     || location.pathname.startsWith('/album/')
     || location.pathname.startsWith('/artist/')
     || location.pathname.startsWith('/search/')
     || location.pathname.startsWith('/mood/');
+    
   const showFooter = ['/signup', '/signin', '/subscription'].includes(location.pathname);
+  
+  const showMusicPlayer = isAuthenticated && currentTrack && !showFooter;
 
   return (
-    <>
+    <div className={`min-h-screen ${showMusicPlayer ? 'pb-24' : ''}`}>
       {showHeader && <Header />}
       <Suspense fallback={<Loading />}>
         <Routes>
@@ -43,7 +50,6 @@ function Layout() {
           <Route path="/signin" element={<Signin />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/music" element={<Music />} />
-            {/* <Route path="/album" element={<Album />} /> */}
             <Route path="/album/:id" element={<AlbumDetails />} />
             <Route path="/favourite" element={<Favourite />} />
             <Route path="/artist/:id" element={<ArtistDetails />} />
@@ -58,18 +64,37 @@ function Layout() {
         </Routes>
       </Suspense>
       {showFooter && <Footer />}
-    </>
+      {showMusicPlayer && (
+        <Suspense fallback={null}>
+          <MusicPlayer
+            currentTrack={currentTrack}
+            trackTitle={currentTrackInfo.title}
+            artist={currentTrackInfo.artist}
+            onPlayNext={() => {
+              // Implement next track logic
+              console.log('Playing next track');
+            }}
+            onPlayPrevious={() => {
+              // Implement previous track logic
+              console.log('Playing previous track');
+            }}
+          />
+        </Suspense>
+      )}
+    </div>
   );
 }
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Suspense fallback={<Loading />}>
-          <Layout />
-        </Suspense>
-      </Router>
+      <MusicProvider>
+        <Router>
+          <Suspense fallback={<Loading />}>
+            <Layout />
+          </Suspense>
+        </Router>
+      </MusicProvider>
     </AuthProvider>
   );
 }
