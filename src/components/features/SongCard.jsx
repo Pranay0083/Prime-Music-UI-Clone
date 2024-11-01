@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaPlus, FaCheck, FaEllipsisV, FaPlay } from "react-icons/fa";
 import { useMusicPlayer } from '../../contexts/musicContext';
 import { api } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 const SongCard = ({ song, isLiked, onLikeToggle }) => {
   const { playTrack } = useMusicPlayer();
@@ -10,6 +11,7 @@ const SongCard = ({ song, isLiked, onLikeToggle }) => {
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
   const menuRef = useRef(null);
   const playlistMenuRef = useRef(null);
+  const navigate = useNavigate();
 
   const handlePlay = async (e) => {
     e.stopPropagation();
@@ -64,12 +66,12 @@ const SongCard = ({ song, isLiked, onLikeToggle }) => {
       <MenuDivider />
       <MenuItem 
         text="View Album" 
-        onClick={() => window.location.href = `/album/${song.albumId}`} 
+        onClick={() => navigate(`/album/${song.albumId}`)}
       />
       <MenuDivider />
       <MenuItem 
         text="View Artist" 
-        onClick={() => window.location.href = `/artist/${song.artist[0]?._id}`} 
+        onClick={() => navigate(`/artist/${song.artist[0]?._id}`)}
       />
     </div>
   );

@@ -1,20 +1,21 @@
 import React, { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useMusicPlayer } from '../../contexts/musicContext';
+import { api } from "../../services/api";
 
 const TrendingSongs = ({ songs: initialSongs = [], loading = false }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollContainerRef = useRef(null);
+  const { playTrack } = useMusicPlayer();
 
   const handleScroll = (direction) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    // Calculate the width of one row (3 songs)
     const rowWidth = container.clientWidth;
-    const newPosition =
-      direction === "left"
-        ? scrollPosition - rowWidth
-        : scrollPosition + rowWidth;
+    const newPosition = direction === "left" 
+      ? scrollPosition - rowWidth 
+      : scrollPosition + rowWidth;
 
     container.scrollTo({
       left: newPosition,
@@ -22,6 +23,31 @@ const TrendingSongs = ({ songs: initialSongs = [], loading = false }) => {
     });
 
     setScrollPosition(newPosition);
+  };
+
+  const handlePlay = async (song) => {
+    try {
+      const token = localStorage.getItem('token');
+    const response = await api.fetchSongDetails(token, song._id);
+    playTrack(response.data.audio_url, {
+      title: song.title,
+      artist: Array.isArray(song.artist) 
+        ? song.artist.map(a => a.name).join(", ")
+        : song.artist,
+      albumId: song.albumId
+    });
+      const data = await response.json();
+      
+      playTrack(data.audio_url, {
+        title: song.title,
+        artist: Array.isArray(song.artist) 
+          ? song.artist.map(a => a.name).join(", ")
+          : song.artist?.name || song.artist,
+        albumId: song.albumId
+      });
+    } catch (error) {
+      console.error('Error playing track:', error);
+    }
   };
 
   if (!initialSongs.length) {
@@ -81,7 +107,8 @@ const TrendingSongs = ({ songs: initialSongs = [], loading = false }) => {
         {initialSongs.map((song) => (
           <div
             key={song._id}
-            className="flex-shrink-0 transition-transform duration-300 hover:scale-105 p-4 bg-neutral-800/30 rounded-lg"
+            className="flex-shrink-0 transition-transform duration-300 hover:scale-105 p-4 bg-neutral-800/30 rounded-lg cursor-pointer"
+            onClick={() => handlePlay(song)}
           >
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 flex-shrink-0">
@@ -97,7 +124,9 @@ const TrendingSongs = ({ songs: initialSongs = [], loading = false }) => {
                   {song.title}
                 </h3>
                 <p className="text-gray-400 text-xs truncate">
-                  {song.artist.name}
+                  {song.artist?.name || (Array.isArray(song.artist) 
+                    ? song.artist.map(a => a.name).join(", ") 
+                    : song.artist)}
                 </p>
               </div>
             </div>
