@@ -1,12 +1,64 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../../services/api';
+import SongList from '../../components/features/SongList';
+import { useMusicPlayer } from "../../contexts/musicContext";
 
 const Artist = () => {
   const { id } = useParams();
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { playTrack } = useMusicPlayer();
+  const [currentSongIndex, setCurrentSongIndex] = useState(0);
+
+  const playAllSongs = () => {
+    if (artist?.songs && artist.songs.length > 0) {
+      const firstSong = artist.songs[0];
+      setCurrentSongIndex(0);
+      
+      playTrack(firstSong.audio_url, {
+        title: firstSong.title,
+        // Update to use the artist name from the parent object since the API returns artist IDs
+        artist: artist.name,
+        albumId: artist._id,
+        onPlayNext: () => handleNextTrack(),
+        onPlayPrevious: () => handlePreviousTrack()
+      });
+    }
+  };
+
+  const handleNextTrack = () => {
+    if (currentSongIndex < artist.songs.length - 1) {
+      const nextIndex = currentSongIndex + 1;
+      const nextSong = artist.songs[nextIndex];
+      
+      setCurrentSongIndex(nextIndex);
+      playTrack(nextSong.audio_url, {
+        title: nextSong.title,
+        artist: artist.name,
+        albumId: artist._id,
+        onPlayNext: () => handleNextTrack(),
+        onPlayPrevious: () => handlePreviousTrack()
+      });
+    }
+  };
+
+  const handlePreviousTrack = () => {
+    if (currentSongIndex > 0) {
+      const prevIndex = currentSongIndex - 1;
+      const prevSong = artist.songs[prevIndex];
+      
+      setCurrentSongIndex(prevIndex);
+      playTrack(prevSong.audio_url, {
+        title: prevSong.title,
+        artist: artist.name,
+        albumId: artist._id,
+        onPlayNext: () => handleNextTrack(),
+        onPlayPrevious: () => handlePreviousTrack()
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchArtistDetails = async () => {
@@ -14,7 +66,14 @@ const Artist = () => {
         setLoading(true);
         const token = localStorage.getItem('token');
         const response = await api.fetchArtistDetails(token, id);
-        setArtist(response.data);
+        
+        // The API returns data in a nested structure
+        if (response.status === 'success' && response.data) {
+          setArtist(response.data);
+        } else {
+          throw new Error('Invalid API response format');
+        }
+        
         setError(null);
       } catch (err) {
         setError('Failed to fetch artist details. Please try again later.');
@@ -26,10 +85,6 @@ const Artist = () => {
 
     fetchArtistDetails();
   }, [id]);
-
-  const handlePlayAll = () => {
-    console.log("all songs are playing")
-  };
 
   if (loading) {
     return (
@@ -59,8 +114,8 @@ const Artist = () => {
             {/* Artist Image */}
             <div className="w-48 h-48 rounded-full overflow-hidden shadow-xl">
               <img
-                src={artist.image || "/api/placeholder/192/192"}
-                alt={artist.name}
+                src={artist?.image || "/api/placeholder/192/192"}
+                alt={artist?.name}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -68,14 +123,22 @@ const Artist = () => {
             {/* Artist Info */}
             <div className="flex-1 space-y-4">
               <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                {artist.name}
+                {artist?.name}
               </h1>
               <p className="text-gray-400 text-lg max-w-2xl">
-                {artist.description}
+                {artist?.description}
               </p>
+              {/* Added languages display */}
+              <div className="flex flex-wrap gap-2">
+                {artist?.languages?.map((language) => (
+                  <span key={language} className="px-3 py-1 rounded-full bg-gray-800 text-gray-300 text-sm">
+                    {language}
+                  </span>
+                ))}
+              </div>
               <div className="flex items-center gap-4">
                 <button
-                  onClick={handlePlayAll}
+                  onClick={playAllSongs}
                   className="group inline-flex items-center justify-center px-8 py-3 rounded-full 
                            bg-green-600 hover:bg-green-500 active:bg-green-700
                            focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 
@@ -91,30 +154,7 @@ const Artist = () => {
             </div>
           </div>
         </div>
-
-        {/* Songs Section */}
-        <div className="relative z-10 mt-8">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <i className="fa-solid fa-music w-6 h-6"></i>
-            Songs
-          </h2>
-          <div className="bg-gray-800/30 rounded-xl backdrop-blur-sm overflow-hidden">
-            {artist.songs && artist.songs.map((song, index) => (
-              <div
-                key={song.id}
-                className="group flex items-center gap-4 p-4 hover:bg-gray-700/30 transition-colors duration-200 border-b border-gray-700/50 last:border-0"
-              >
-                <div className="w-12 text-gray-400 text-center">{index + 1}</div>
-                <div className="flex-1">
-                  <h3 className="text-white font-medium group-hover:text-green-500 transition-colors duration-200">
-                    {song.title}
-                  </h3>
-                </div>
-                <i className="fa-solid fa-playw-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></i>
-              </div>
-            ))}
-          </div>
-        </div>
+        <SongList songs={artist?.songs || []} />
       </div>
     </div>
   );

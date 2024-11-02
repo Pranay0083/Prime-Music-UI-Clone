@@ -1,6 +1,24 @@
 import React from "react";
+import { useMusicPlayer } from "../../contexts/musicContext";
+import LikeButton from "./LikeButton";
+import ThreeDotsMenu from "./ThreeDotsMenu";
+import PlaylistCreationModal from './PlaylistCreationModal';
+import { useState } from "react";
 
 const SongList = ({ songs }) => {
+  const { playTrack } = useMusicPlayer();
+  const [isCreatePlaylistModalOpen, setIsCreatePlaylistModalOpen] = useState(false);
+
+  const handlePlaySong = (song, index) => {
+    playTrack(song.audio_url, {
+      title: song.title,
+      // artist: artistNames,
+      // albumId: albumId,
+      onPlayNext: () => console.log("next"),
+      onPlayPrevious: () => console.log("prev")
+    });
+  };
+
   return (
     <div className="mt-8">
       <table className="w-full">
@@ -17,6 +35,7 @@ const SongList = ({ songs }) => {
             <tr 
               key={song._id}
               className="group hover:bg-white/5 transition-colors"
+              onClick={() => handlePlaySong(song, index)}
             >
               <td className="py-4 text-gray-400">{index + 1}</td>
               <td className="py-4">
@@ -27,19 +46,22 @@ const SongList = ({ songs }) => {
                 </div>
               </td>
               <td className="py-4">
-                <button className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <i className="fa-solid fa-plus text-gray-400 hover:text-white"></i>
-                </button>
+                <LikeButton song={song} />
               </td>
               <td className="py-4">
-                <button className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <i className="fa-solid fa-ellipsis-vertical text-gray-400 hover:text-white"></i>
-                </button>
+              <ThreeDotsMenu 
+                song={song}
+                onPlaylistCreate={() => setIsCreatePlaylistModalOpen(true)}
+              />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <PlaylistCreationModal
+        isCreatePlaylistModalOpen={isCreatePlaylistModalOpen}
+        setIsCreatePlaylistModalOpen={setIsCreatePlaylistModalOpen}
+      />
     </div>
   );
 };

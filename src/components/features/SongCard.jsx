@@ -1,169 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FaPlus, FaCheck, FaEllipsisV, FaPlay } from "react-icons/fa";
-import { useMusicPlayer } from '../../contexts/musicContext';
-import { api } from "../../services/api";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import PlayButton from "./PlayButton";
+import LikeButton from "./LikeButton";
+import ThreeDotsMenu from "./ThreeDotsMenu";
 import PlaylistCreationModal from './PlaylistCreationModal';
 
 const SongCard = ({ song }) => {
-  const { playTrack } = useMusicPlayer();
   const [isHovered, setIsHovered] = useState(false);
-  const [showMainMenu, setShowMainMenu] = useState(false);
-  const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
   const [isCreatePlaylistModalOpen, setIsCreatePlaylistModalOpen] = useState(false);
-  const menuRef = useRef(null);
-  const playlistMenuRef = useRef(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [playlists, setPlaylists] = useState([]);
-  const navigate = useNavigate();
-
-  const handlePlay = async (e) => {
-    e.stopPropagation();
-    const token = localStorage.getItem('token');
-    const response = await api.fetchSongDetails(token, song._id);
-    playTrack(response.data.audio_url, {
-      title: song.title,
-      artist: Array.isArray(song.artist)
-        ? song.artist.map(a => a.name).join(", ")
-        : song.artist,
-      albumId: song.albumId
-    });
-  };
-
-  const onLikeToggle = async (e) => {
-    const token = localStorage.getItem('token');
-    const response = await api.toggleFavourite(token, song._id);
-    if (response.message === "song added to favorites successfully.") {
-      setIsLiked(true);
-    } else {
-      setIsLiked(false);
-    }
-  };
-
-  const addtoplaylist = async (playlistId) => {
-    // const token = localStorage.getItem('token');
-    // const response = await api.addSongToPlaylist(token, playlistId, song._id);
-    // if (response.status === "success"){
-    //   return;
-    // }
-    console.log("adding to playlist")
-  };  
-
-  useEffect(() => {
-    const fetchPlaylists = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const response = await api.fetchPlaylists(token);
-        setPlaylists(response.data);
-        setError(null);
-      } catch (err) {
-        setError("Failed to fetch playlists. Please try again later.");
-        console.error("Error fetching playlists:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPlaylists();
-  }, []);
-
-  // Handle clicking outside to close menus
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target) &&
-          playlistMenuRef.current && !playlistMenuRef.current.contains(event.target)) {
-        setShowMainMenu(false);
-        setShowPlaylistMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const MenuItem = ({ text, onClick }) => (
-    <div
-      className="p-2 text-sm text-gray-300 hover:bg-neutral-700 cursor-pointer transition-colors duration-200"
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-    >
-      {text}
-    </div>
-  );
-
-  const MenuDivider = () => <div className="h-px bg-neutral-700" />;
-
-  const MainMenu = () => (
-    <div
-      ref={menuRef}
-      className="absolute bg-neutral-800 rounded-md shadow-lg border border-neutral-700 min-w-[150px] right-0 top-8 z-10"
-    >
-      <MenuItem
-        text="Add to Playlist"
-        onClick={() => setShowPlaylistMenu(!showPlaylistMenu)}
-      />
-      <MenuDivider />
-      <MenuItem
-        text="View Album"
-        onClick={() => navigate(`/album/${song.album}`)}
-      />
-      <MenuDivider />
-      <MenuItem
-        text="View Artist"
-        onClick={() => navigate(`/artist/${song.artist[0]?._id}`)}
-      />
-    </div>
-  );
-
-  const PlaylistMenu = () => (
-    <div
-      ref={playlistMenuRef}
-      className="absolute bg-neutral-800 rounded-md shadow-lg border border-neutral-700 min-w-[150px] right-[-160px] top-0 z-20 max-h-60 overflow-y-auto"
-    >
-      <MenuItem
-        text="New Playlist"
-        onClick={() => setIsCreatePlaylistModalOpen(true)}
-      />
-      {playlists.map((playlist, index) => (
-        <React.Fragment key={playlist._id || index}>
-          <MenuDivider />
-          <MenuItem
-            text={playlist.title}
-            onClick={() => addtoplaylist(playlist._id)}
-          />
-        </React.Fragment>
-      ))}
-    </div>
-  );
-  
-
-  const handleEllipsisClick = (e) => {
-    e.stopPropagation();
-    setShowMainMenu(!showMainMenu);
-    setShowPlaylistMenu(false);
-  };
-
-  const handleLikeToggle = (e) => {
-    e.stopPropagation();
-    if (onLikeToggle) {
-      onLikeToggle(song._id);
-    }
-  };
 
   return (
     <div
       className="flex-shrink-0 transition-transform mr-4 group relative"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        if (!showMainMenu && !showPlaylistMenu) {
-          setShowMainMenu(false);
-          setShowPlaylistMenu(false);
-        }
-      }}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="w-[175px]">
         <div className="relative">
@@ -178,31 +27,12 @@ const SongCard = ({ song }) => {
               ${isHovered ? "opacity-100" : "opacity-0"}`}
           >
             <div className="flex flex-row justify-between items-center w-full px-4">
-              {isLiked ? (
-                <FaCheck
-                  className="text-green-500 w-4 h-4 cursor-pointer hover:scale-110 transition-transform"
-                  onClick={handleLikeToggle}
-                />
-              ) : (
-                <FaPlus
-                  className="text-white w-4 h-4 cursor-pointer hover:scale-110 transition-transform"
-                  onClick={handleLikeToggle}
-                />
-              )}
-              <div
-                className="bg-black/20 rounded-full transition-all backdrop-blur-md w-16 h-16 flex justify-center items-center hover:scale-105 cursor-pointer"
-                onClick={handlePlay}
-              >
-                <FaPlay className="w-6 h-6 text-white ml-1" />
-              </div>
-              <div className="relative">
-                <FaEllipsisV
-                  className="w-4 h-4 text-white cursor-pointer hover:scale-110 transition-transform"
-                  onClick={handleEllipsisClick}
-                />
-                {showMainMenu && <MainMenu />}
-                {showPlaylistMenu && <PlaylistMenu />}
-              </div>
+              <LikeButton song={song} />
+              <PlayButton song={song} />
+              <ThreeDotsMenu 
+                song={song}
+                onPlaylistCreate={() => setIsCreatePlaylistModalOpen(true)}
+              />
             </div>
           </div>
         </div>

@@ -14,6 +14,7 @@ const Favourites = () => {
         const token = localStorage.getItem('token');
         const response = await api.fetchFavourites(token);
         setFavourites(response.data.songs);
+        console.log(response)
         setError(null);
       } catch (err) {
         setError('Failed to fetch favourites. Please try again later.');

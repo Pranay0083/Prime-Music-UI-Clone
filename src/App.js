@@ -28,17 +28,17 @@ function Layout() {
   const location = useLocation();
   const { isAuthenticated } = useContext(AuthContext);
   const { currentTrack, currentTrackInfo } = useMusicPlayer();
-  
+
   const showHeader = ['/', '/music', '/album', '/favourite', '/search', '/mood', '/profile', '/playlist', '/artist']
-    .includes(location.pathname) 
+    .includes(location.pathname)
     || location.pathname.startsWith('/album/')
     || location.pathname.startsWith('/artist/')
     || location.pathname.startsWith('/search/')
     || location.pathname.startsWith('/mood/')
     || location.pathname.startsWith('/playlist/');
-    
+
   const showFooter = ['/signup', '/signin', '/subscription'].includes(location.pathname);
-  
+
   const showMusicPlayer = isAuthenticated && currentTrack && !showFooter;
 
   return (
@@ -71,14 +71,8 @@ function Layout() {
             currentTrack={currentTrack}
             trackTitle={currentTrackInfo.title}
             artist={currentTrackInfo.artist}
-            onPlayNext={() => {
-              // Implement next track logic
-              console.log('Playing next track');
-            }}
-            onPlayPrevious={() => {
-              // Implement previous track logic
-              console.log('Playing previous track');
-            }}
+            onPlayNext={currentTrackInfo.onPlayNext}
+            onPlayPrevious={currentTrackInfo.onPlayPrevious}
           />
         </Suspense>
       )}
