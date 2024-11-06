@@ -1,10 +1,15 @@
-import React, { createContext, useReducer, useEffect } from 'react';
-import { api } from '../services/api';
+import React, { createContext, useReducer, useEffect } from "react";
+import { api } from "../services/api";
 
+// debugger;
+const user = localStorage.getItem("user") || null;
+// debugger
+const parsedUser = user ? JSON.parse(user) : null;
+// debugger
 const initialState = {
-  isAuthenticated: false,
-  user: null,
-  token: null,
+  isAuthenticated: !!localStorage.getItem("token"),
+  user: parsedUser,
+  token: localStorage.getItem("token"),
   loading: false,
   error: null,
 };
@@ -14,20 +19,18 @@ const AuthDispatchContext = createContext(undefined);
 
 const authReducer = (state, action) => {
   switch (action.type) {
-    case 'LOGIN_REQUEST':
+    case "LOGIN_REQUEST":
       return { ...state, loading: true };
-    case 'LOGIN_SUCCESS':
+    case "LOGIN_SUCCESS":
+      const payload = action.payload;
       return {
         ...state,
-        isAuthenticated: true,
-        user: action.payload.user,
-        token: action.payload.token,
-        loading: false
+        ...payload,
       };
-    case 'LOGIN_FAILURE':
+    case "LOGIN_FAILURE":
       return { ...state, error: action.payload, loading: false };
-    case 'LOGOUT':
-      localStorage.removeItem('token');
+    case "LOGOUT":
+      localStorage.removeItem("token");
       return { ...state, isAuthenticated: false, user: null, token: null };
     default:
       return state;
@@ -38,19 +41,22 @@ const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    console.log('Token on load:', token);
+    const token = localStorage.getItem("token");
+    console.log("Token on load:", token);
     if (token) {
       const fetchUserData = async () => {
-        dispatch({ type: 'LOGIN_REQUEST' });
+        dispatch({ type: "LOGIN_REQUEST" });
         try {
           const response = await api.fetchUserData(token);
-          console.log('Fetched User Data:', response.data);
-          dispatch({ type: 'LOGIN_SUCCESS', payload: { user: response.data.user, token } });
+          console.log("Fetched User Data:", response.data);
+          dispatch({
+            type: "LOGIN_SUCCESS",
+            payload: { user: response.data.user, token },
+          });
         } catch (error) {
-          dispatch({ type: 'LOGIN_FAILURE', payload: error.message });
-          localStorage.removeItem('token');
-          console.error('Error fetching user data:', error);
+          dispatch({ type: "LOGIN_FAILURE", payload: error.message });
+          localStorage.removeItem("token");
+          console.error("Error fetching user data:", error);
         }
       };
 

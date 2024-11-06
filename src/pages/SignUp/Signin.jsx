@@ -21,6 +21,7 @@ const SignIn = () => {
         localStorage.setItem('token', token);
         console.log('Token saved:', token);
         dispatch({ type: 'LOGIN_SUCCESS', payload: { user: data.user, token } });
+        localStorage.setItem("user", JSON.stringify(data.user));
         navigate('/');
       }
     } catch (error) {

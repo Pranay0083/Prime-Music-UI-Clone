@@ -6,14 +6,13 @@ import { AuthContext, AuthDispatchContext } from '../../../contexts/authContext'
 const Profile = () => {
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useContext(AuthContext);
+  const {isAuthenticated } = useContext(AuthContext);
+  const user = localStorage.getItem("user") && JSON.parse(localStorage.getItem("user"))
   const dispatch = useContext(AuthDispatchContext);
-
   const handleLogout = () => {
     dispatch({ type: 'LOGOUT' });
     navigate('/signin');
   };
-
   const getInitials = (name) => {
     const nameParts = name.split(' ');
     const initials = nameParts.map(part => part[0]).join('');

@@ -8,7 +8,7 @@ const FooterLink = ({ href, children }) => (
     className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors duration-200 text-sm hover:underline decoration-gray-500"
   >
     {children}
-    <i class="fa-solid fa-arrow-up-right-from-square w-3 h-3 opacity-70"></i>
+    <i className="fa-solid fa-arrow-up-right-from-square w-3 h-3 opacity-70"></i>
   </a>
 );
 
